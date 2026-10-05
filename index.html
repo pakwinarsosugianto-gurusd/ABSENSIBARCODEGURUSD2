@@ -1,0 +1,1174 @@
+'''javascript<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Digital Guru Barcode - UPTD SDN 2 NABANG BARU</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti JS -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- JsBarcode CDN for Generating Barcodes -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sdRed: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            500: '#f43f5e',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                            800: '#991b1b',
+                            900: '#7f1d1d',
+                        },
+                        sdGold: '#f59e0b',
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 2s infinite',
+                        'pulse-gentle': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #fcf8f8;
+            background-image: radial-gradient(#dc2626 0.75px, transparent 0.75px), radial-gradient(#dc2626 0.75px, #fcf8f8 0.75px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+        }
+        .heading-font {
+            font-family: 'Fredoka', cursive;
+        }
+        .custom-card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+        }
+        .btn-bounce {
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease;
+        }
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+        .btn-bounce:hover {
+            transform: translateY(-3px);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #dc2626;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800 antialiased selection:bg-sdRed-600 selection:text-white">
+
+    <header class="bg-gradient-to-r from-sdRed-800 via-sdRed-600 to-sdRed-800 text-white shadow-xl sticky top-0 z-40 border-b-4 border-yellow-400">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- School Identity & Logo Tut Wuri Handayani -->
+            <div class="flex items-center space-x-3">
+                <div class="bg-white p-1.5 rounded-full shadow-md border-2 border-yellow-300 transform hover:rotate-6 transition-transform">
+                    <svg class="w-10 h-10 md:w-11 md:h-11" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="48" fill="#FFFFFF" stroke="#DC2626" stroke-width="4"/>
+                        <path d="M50 12 L78 30 L78 62 L50 88 L22 62 L22 30 Z" fill="#DC2626"/>
+                        <path d="M50 20 L70 34 L70 58 L50 78 L30 58 L30 34 Z" fill="#F59E0B"/>
+                        <path d="M35 55 C42 50, 48 53, 50 56 C52 53, 58 50, 65 55 L65 68 C58 63, 52 66, 50 69 C48 66, 42 63, 35 68 Z" fill="#FFFFFF"/>
+                        <path d="M50 28 L53 38 L62 34 L56 42 L65 48 L55 49 L58 58 L50 51 L42 58 L45 49 L35 48 L44 42 L38 34 L47 38 Z" fill="#FFFFFF"/>
+                    </svg>
+                </div>
+                <div>
+                    <span class="bg-yellow-400 text-sdRed-900 text-[10px] md:text-xs font-black uppercase px-2 py-0.5 rounded-full tracking-wider shadow-sm">Sistem Barcode Guru</span>
+                    <h1 class="heading-font text-lg md:text-xl font-bold leading-tight tracking-wide">UPTD SDN 2 NABANG BARU</h1>
+                    <p class="text-xs text-red-100 flex items-center gap-1 font-medium">
+                        <i class="fa-solid fa-school text-yellow-300"></i> Presensi Digital Pendidik & Tenaga Kependidikan
+                    </p>
+                </div>
+            </div>
+
+            <!-- Header Action Controls -->
+            <div class="flex items-center space-x-2">
+                <!-- Music Toggle Button -->
+                <button id="musicToggleBtn" onclick="toggleMusic()" class="px-3 py-1.5 bg-yellow-400 hover:bg-yellow-300 text-sdRed-900 rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-1.5 border border-yellow-200">
+                    <i id="musicIcon" class="fa-solid fa-music text-sdRed-700"></i>
+                    <span id="musicText">Musik: ON 🎵</span>
+                </button>
+
+                <!-- Switcher Buttons (Mode Guru / Mode Kepala Sekolah) -->
+                <div class="flex items-center space-x-1 bg-sdRed-900/60 p-1 rounded-xl border border-red-400/40">
+                    <button id="btnModeGuru" onclick="switchTab('guru')" class="px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold transition-all bg-white text-sdRed-700 shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-barcode"></i>
+                        <span>Presensi Guru</span>
+                    </button>
+                    <button id="btnModeKepsek" onclick="switchTab('kepsek')" class="px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold transition-all text-white hover:bg-sdRed-600 flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-tie"></i>
+                        <span>Kepala Sekolah</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- ========================================================= -->
+        <!-- TAB 1: MODE PRESENSI GURU (TEACHER BARCODE ATTENDANCE) -->
+        <!-- ========================================================= -->
+        <div id="sectionGuruPresensi" class="space-y-6">
+
+            <!-- Hero Banner & School Identity -->
+            <div class="relative bg-gradient-to-r from-red-600 via-sdRed-700 to-sdRed-800 rounded-3xl p-6 md:p-8 text-white shadow-xl overflow-hidden border-4 border-white">
+                <div class="absolute -right-10 -bottom-10 opacity-15 pointer-events-none">
+                    <i class="fa-solid fa-barcode text-9xl"></i>
+                </div>
+                <div class="absolute right-1/4 top-3 opacity-20 pointer-events-none text-yellow-300">
+                    <i class="fa-solid fa-award text-5xl animate-pulse"></i>
+                </div>
+
+                <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    
+                    <div class="md:col-span-8 space-y-3 text-center md:text-left">
+                        <div class="inline-flex items-center gap-2 bg-yellow-400 text-sdRed-900 px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                            <i class="fa-solid fa-calendar-days text-sdRed-700"></i>
+                            <span>Presensi Guru Senin s.d. Sabtu</span>
+                        </div>
+                        <h2 class="heading-font text-2xl md:text-4xl font-black tracking-wide leading-tight">
+                            Selamat Datang Bapak & Ibu Guru! 👋
+                        </h2>
+                        <p class="text-sm md:text-base text-red-50 font-medium leading-relaxed">
+                            Silakan pindai kartu Barcode NIP atau masukkan nama Anda untuk mencatat kehadiran harian di <strong>UPTD SDN 2 NABANG BARU</strong>.
+                        </p>
+                        
+                        <div class="pt-2 flex flex-wrap justify-center md:justify-start gap-2 text-xs font-semibold">
+                            <span id="currentDateBadge" class="bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/30 flex items-center gap-1.5">
+                                <i class="fa-regular fa-clock text-yellow-300"></i> Memuat tanggal...
+                            </span>
+                            <span class="bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/30 flex items-center gap-1.5">
+                                <i class="fa-solid fa-qrcode text-yellow-300"></i> Barcode System Verified
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Cartoon Teacher Avatars (Laki-laki & Perempuan) -->
+                    <div class="md:col-span-4 flex justify-center items-center">
+                        <div class="flex items-end space-x-3 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 shadow-inner">
+                            <div class="text-center group">
+                                <div class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-tr from-amber-100 to-white rounded-full flex items-center justify-center border-4 border-yellow-300 shadow-md group-hover:scale-105 transition-transform relative">
+                                    <span class="text-3xl md:text-4xl">👨‍🏫</span>
+                                    <span class="absolute -top-1 -right-1 bg-sdRed-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold">GURU</span>
+                                </div>
+                                <span class="text-xs font-bold block mt-1 text-yellow-200">Pak Guru</span>
+                            </div>
+
+                            <div class="text-center group">
+                                <div class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-tr from-amber-100 to-white rounded-full flex items-center justify-center border-4 border-yellow-300 shadow-md group-hover:scale-105 transition-transform relative">
+                                    <span class="text-3xl md:text-4xl">👩‍🏫</span>
+                                    <span class="absolute -top-1 -right-1 bg-sdRed-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold">GURU</span>
+                                </div>
+                                <span class="text-xs font-bold block mt-1 text-yellow-200">Bu Guru</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                
+                <!-- Tujuan Absensi Guru -->
+                <div class="bg-white rounded-2xl p-5 border-2 border-sdRed-100 custom-card-shadow relative overflow-hidden">
+                    <div class="w-2 h-full bg-sdRed-600 absolute left-0 top-0"></div>
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-red-100 text-sdRed-600 flex items-center justify-center font-bold text-lg">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <div>
+                            <h3 class="heading-font font-bold text-sdRed-700 text-lg">Tujuan Absensi Barcode Guru</h3>
+                            <p class="text-xs text-gray-500">Mengapa barcode presensi penting?</p>
+                        </div>
+                    </div>
+                    <ul class="text-xs md:text-sm text-gray-600 space-y-2">
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-circle-check text-green-500 mt-1"></i>
+                            <span><strong>Efisiensi Cepat:</strong> Pindai kode barcode unik NIP/ID untuk mencatat waktu hadir instan.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-circle-check text-green-500 mt-1"></i>
+                            <span><strong>Kedisiplinan Pendidik:</strong> Menjadi teladan utama kedisiplinan bagi murid-murid SD.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-circle-check text-green-500 mt-1"></i>
+                            <span><strong>Monitoring Kesehatan:</strong> Membantu Kepala Sekolah memantau kondisi fisik & keuzuran pendidik.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Pesan dari Kepala Sekolah -->
+                <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border-2 border-amber-200 custom-card-shadow relative">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-amber-200 text-amber-800 flex items-center justify-center font-bold text-lg shadow-sm">
+                                <i class="fa-solid fa-quote-left"></i>
+                            </div>
+                            <div>
+                                <h3 class="heading-font font-bold text-amber-900 text-lg">Pesan Kepala Sekolah</h3>
+                                <p class="text-xs text-amber-700 font-semibold" id="headmasterNameDisplay">KEPALA UPTD SDN 2 NABANG BARU</p>
+                            </div>
+                        </div>
+                        <span class="animate-bounce-slow text-2xl">📢</span>
+                    </div>
+                    <div class="bg-white/90 rounded-xl p-3.5 border border-amber-200 shadow-sm text-xs md:text-sm text-gray-700 italic">
+                        <p id="headmasterMessageText">
+                            "Selamat bertugas Bapak dan Ibu Guru pendidik bangsa! Mari berikan teladan terbaik, bimbing anak-anak dengan penuh kasih sayang, dan jaga selalu kesehatan."
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 md:p-8 border-2 border-sdRed-200 custom-card-shadow">
+                
+                <div class="border-b border-gray-100 pb-4 mb-6 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 class="heading-font text-xl md:text-2xl font-bold text-sdRed-700 flex items-center gap-2">
+                            <i class="fa-solid fa-qrcode text-sdRed-600"></i>
+                            Form Presensi Barcode Guru
+                        </h2>
+                        <p class="text-xs text-gray-500 mt-0.5">Silakan pilih hari tugas, pindai/pilih Barcode ID NIP, lalu beri tanda centang (v) atau silang (x)</p>
+                    </div>
+
+                    <!-- Day Selector Pills (Senin - Sabtu) -->
+                    <div class="w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                        <div class="flex space-x-1 bg-gray-100 p-1 rounded-xl" id="dayPillsContainer">
+                            <button type="button" onclick="playSfx('click'); selectFormDay('Senin')" class="day-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-600 hover:text-sdRed-600" data-day="Senin">Senin</button>
+                            <button type="button" onclick="playSfx('click'); selectFormDay('Selasa')" class="day-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-600 hover:text-sdRed-600" data-day="Selasa">Selasa</button>
+                            <button type="button" onclick="playSfx('click'); selectFormDay('Rabu')" class="day-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-600 hover:text-sdRed-600" data-day="Rabu">Rabu</button>
+                            <button type="button" onclick="playSfx('click'); selectFormDay('Kamis')" class="day-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-600 hover:text-sdRed-600" data-day="Kamis">Kamis</button>
+                            <button type="button" onclick="playSfx('click'); selectFormDay('Jumat')" class="day-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-600 hover:text-sdRed-600" data-day="Jumat">Jumat</button>
+                            <button type="button" onclick="playSfx('click'); selectFormDay('Sabtu')" class="day-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-600 hover:text-sdRed-600" data-day="Sabtu">Sabtu</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Barcode Scanner Simulation Box -->
+                <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-4 text-white mb-6 border-2 border-yellow-400/50 shadow-inner">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span class="font-bold text-xs uppercase tracking-wider text-yellow-300">Barcode Scanner Active</span>
+                        </div>
+                        <button type="button" onclick="playSfx('click'); simulateBarcodeScan()" class="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-bold px-3 py-1 rounded-lg text-xs transition-transform active:scale-95 shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-camera"></i>
+                            <span>Simulasi Pindai Kartu Barcode</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-slate-950/60 p-3 rounded-xl border border-slate-700">
+                        <div class="md:col-span-7 space-y-1">
+                            <label class="block text-[11px] font-bold text-slate-400 uppercase">Pilih / Masukkan Kode Barcode NIP Guru:</label>
+                            <select id="teacherSelect" onchange="onTeacherSelectChange()" class="w-full p-2.5 bg-slate-800 text-white font-semibold rounded-lg text-xs md:text-sm border border-slate-600 outline-none focus:border-yellow-400">
+                                <option value="">-- Pilih Guru / Scan Barcode --</option>
+                                <option value="WINARSO SUGIANTO, S.Pd.Gr|199208152023011001|Wali Kelas 4">WINARSO SUGIANTO, S.Pd.Gr (Wali Kelas 4 - NIP: 199208152023011001)</option>
+                                <option value="SUHARTI, S.Pd|197804122008012003|Guru Kelas 1">SUHARTI, S.Pd (Guru Kelas 1 - NIP: 197804122008012003)</option>
+                                <option value="BAMBANG HERMAWAN, S.Pd|198311022010011005|Guru Kelas 2">BAMBANG HERMAWAN, S.Pd (Guru Kelas 2 - NIP: 198311022010011005)</option>
+                                <option value="NUR HIDAYAH, S.Pd|198906202014022002|Guru Kelas 3">NUR HIDAYAH, S.Pd (Guru Kelas 3 - NIP: 198906202014022002)</option>
+                                <option value="EKO PRASETYO, S.Pd.SD|199003102019031008|Guru Kelas 5">EKO PRASETYO, S.Pd.SD (Guru Kelas 5 - NIP: 199003102019031008)</option>
+                                <option value="SRI WAHYUNI, S.Pd|198109152006042011|Guru Kelas 6">SRI WAHYUNI, S.Pd (Guru Kelas 6 - NIP: 198109152006042011)</option>
+                                <option value="AGUS SETIAWAN, S.Pd.Jas|199402282020121004|Guru PJOK">AGUS SETIAWAN, S.Pd.Jas (Guru PJOK - NIP: 199402282020121004)</option>
+                                <option value="MANUAL|MANUAL|Manual Custom">-- Ketik Nama Guru Lainnya --</option>
+                            </select>
+                        </div>
+
+                        <!-- Live Barcode Preview Generator -->
+                        <div class="md:col-span-5 bg-white p-2.5 rounded-lg flex flex-col items-center justify-center min-h-[70px]">
+                            <svg id="barcodePreviewCanvas" class="max-w-full max-h-12"></svg>
+                            <span id="barcodeCodeText" class="text-[10px] font-mono text-gray-600 mt-0.5 font-bold">NIP: -</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teacher Attendance Form -->
+                <form id="attendanceFormGuru" onsubmit="handleAttendanceSubmitGuru(event)" class="space-y-6">
+                    
+                    <input type="hidden" id="selectedDayInput" value="Senin">
+
+                    <!-- Field 1: Input Nama Guru & NIP -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label for="teacherNameInput" class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                1. Nama Lengkap Guru & Gelar <span class="text-sdRed-600">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="teacherNameInput" list="savedTeacherNamesList" required placeholder="Ketik atau pilih nama guru..." class="w-full pl-10 pr-4 py-3 bg-red-50/50 border-2 border-red-100 rounded-xl font-semibold text-gray-800 text-sm focus:ring-4 focus:ring-red-200 focus:border-sdRed-600 outline-none transition-all">
+                                <datalist id="savedTeacherNamesList"></datalist>
+                                <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sdRed-600 text-base">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label for="teacherNipInput" class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                Barcode ID / NIP Guru
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="teacherNipInput" oninput="renderBarcodeFromInput()" placeholder="Nomor Barcode / NIP..." class="w-full pl-10 pr-4 py-3 bg-red-50/50 border-2 border-red-100 rounded-xl font-mono text-gray-800 text-sm focus:ring-4 focus:ring-red-200 focus:border-sdRed-600 outline-none transition-all">
+                                <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sdRed-600 text-base">
+                                    <i class="fa-solid fa-barcode"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Field 2: Status Kehadiran (v / x) -->
+                    <div class="space-y-2">
+                        <label class="block text-xs md:text-sm font-bold text-gray-700 uppercase tracking-wider">
+                            2. Status Kehadiran Guru Hari Ini <span class="text-sdRed-600">*</span>
+                        </label>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            
+                            <!-- HADIR (Centang / ✔️) -->
+                            <label class="relative cursor-pointer group" onclick="playSfx('click')">
+                                <input type="radio" name="attendanceStatus" value="Hadir" required onclick="toggleAbsenceFields(false)" class="peer sr-only">
+                                <div class="p-5 rounded-2xl border-3 border-gray-200 bg-white peer-checked:border-emerald-500 peer-checked:bg-emerald-50/60 peer-checked:shadow-md transition-all group-hover:border-emerald-300 flex items-center space-x-4">
+                                    <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl font-black shadow-inner peer-checked:bg-emerald-500 peer-checked:text-white transition-colors">
+                                        ✓
+                                    </div>
+                                    <div>
+                                        <span class="heading-font text-lg font-bold text-emerald-700 block">SAYA HADIR (V)</span>
+                                        <span class="text-xs text-gray-500">Klik centang jika Bapak/Ibu hadir bertugas hari ini!</span>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <!-- TIDAK HADIR (Silang / ❌) -->
+                            <label class="relative cursor-pointer group" onclick="playSfx('click')">
+                                <input type="radio" name="attendanceStatus" value="Tidak Hadir" onclick="toggleAbsenceFields(true)" class="peer sr-only">
+                                <div class="p-5 rounded-2xl border-3 border-gray-200 bg-white peer-checked:border-sdRed-500 peer-checked:bg-red-50/60 peer-checked:shadow-md transition-all group-hover:border-red-300 flex items-center space-x-4">
+                                    <div class="w-14 h-14 rounded-2xl bg-red-100 text-sdRed-600 flex items-center justify-center text-3xl font-black shadow-inner peer-checked:bg-sdRed-600 peer-checked:text-white transition-colors">
+                                        ✗
+                                    </div>
+                                    <div>
+                                        <span class="heading-font text-lg font-bold text-sdRed-700 block">TIDAK HADIR (X)</span>
+                                        <span class="text-xs text-gray-500">Klik tanda X jika berhalangan mengajar/keuzuran</span>
+                                    </div>
+                                </div>
+                            </label>
+
+                        </div>
+                    </div>
+
+                    <!-- Field 3: Dynamic Reason Section -->
+                    <div id="absenceReasonSection" class="hidden space-y-4 p-5 bg-red-50/70 border-2 border-red-200 rounded-2xl transition-all">
+                        
+                        <div class="flex items-center space-x-2 text-sdRed-700 font-bold text-sm">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>Kolom Alasan Ketidak-hadiran Guru</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <label class="cursor-pointer" onclick="playSfx('click')">
+                                <input type="radio" name="absenceCategory" value="Sakit" checked class="peer sr-only">
+                                <div class="p-3 text-center rounded-xl bg-white border-2 border-gray-200 peer-checked:border-sdRed-600 peer-checked:bg-sdRed-600 peer-checked:text-white font-bold text-xs md:text-sm transition-all shadow-sm">
+                                    🤒 Sakit
+                                </div>
+                            </label>
+                            <label class="cursor-pointer" onclick="playSfx('click')">
+                                <input type="radio" name="absenceCategory" value="Izin" class="peer sr-only">
+                                <div class="p-3 text-center rounded-xl bg-white border-2 border-gray-200 peer-checked:border-sdRed-600 peer-checked:bg-sdRed-600 peer-checked:text-white font-bold text-xs md:text-sm transition-all shadow-sm">
+                                    ✉ Izin
+                                </div>
+                            </label>
+                            <label class="cursor-pointer" onclick="playSfx('click')">
+                                <input type="radio" name="absenceCategory" value="Dinas Luar" class="peer sr-only">
+                                <div class="p-3 text-center rounded-xl bg-white border-2 border-gray-200 peer-checked:border-sdRed-600 peer-checked:bg-sdRed-600 peer-checked:text-white font-bold text-xs md:text-sm transition-all shadow-sm">
+                                    🏛 Dinas Luar
+                                </div>
+                            </label>
+                            <label class="cursor-pointer" onclick="playSfx('click')">
+                                <input type="radio" name="absenceCategory" value="Lainnya" class="peer sr-only">
+                                <div class="p-3 text-center rounded-xl bg-white border-2 border-gray-200 peer-checked:border-sdRed-600 peer-checked:bg-sdRed-600 peer-checked:text-white font-bold text-xs md:text-sm transition-all shadow-sm">
+                                    ❓ Lainnya
+                                </div>
+                            </label>
+                        </div>
+
+                        <div>
+                            <label for="absenceNote" class="block text-xs font-bold text-gray-700 mb-1">
+                                Tuliskan Detail Alasan / Surat Keterangan:
+                            </label>
+                            <textarea id="absenceNote" rows="2" placeholder="Contoh: Sakit flu & demam / Mengikuti Bimtek Kurikulum Merdeka..." class="w-full p-3 bg-white border border-red-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-sdRed-500"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="pt-2">
+                        <button type="submit" class="btn-bounce w-full bg-gradient-to-r from-sdRed-600 to-red-700 hover:from-sdRed-700 hover:to-sdRed-800 text-white font-black py-4 rounded-2xl shadow-lg hover:shadow-xl text-base md:text-lg flex items-center justify-center gap-2 border-2 border-yellow-300 tracking-wide">
+                            <i class="fa-solid fa-qrcode text-yellow-300 text-xl"></i>
+                            <span>SIMPAN ABSENSI BARCODE GURU</span>
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- TAB 2: MODE KEPALA SEKOLAH / ADMIN DASHBOARD -->
+        <!-- ========================================================= -->
+        <div id="sectionKepsekDashboard" class="hidden space-y-6">
+
+            <!-- Headmaster Header Card -->
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-6 text-white shadow-xl border-4 border-yellow-400">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-14 h-14 bg-yellow-400 text-slate-900 rounded-2xl flex items-center justify-center text-2xl font-black shadow-md">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+                        <div>
+                            <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Panel Pengelola Sekolah</span>
+                            <h2 class="heading-font text-xl md:text-2xl font-bold">Rekapitulasi Presensi Guru</h2>
+                            <p class="text-xs text-slate-300">UPTD SDN 2 NABANG BARU — Laporan Kehadiran Pendidik & Tenaga Kependidikan</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button onclick="playSfx('click'); exportToCSV()" class="btn-bounce bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow">
+                            <i class="fa-solid fa-file-excel"></i>
+                            <span>Unduh Rekap (CSV)</span>
+                        </button>
+                        <button onclick="playSfx('click'); resetData()" class="btn-bounce bg-red-600 hover:bg-red-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Reset Data</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Summary Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-2xl border-2 border-emerald-100 shadow-sm flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg font-bold">✓</div>
+                    <div>
+                        <span class="text-xs text-gray-500 font-bold block">Hadir</span>
+                        <span id="statHadir" class="heading-font text-xl font-bold text-emerald-600">0</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border-2 border-amber-100 shadow-sm flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg font-bold">🤒</div>
+                    <div>
+                        <span class="text-xs text-gray-500 font-bold block">Sakit</span>
+                        <span id="statSakit" class="heading-font text-xl font-bold text-amber-600">0</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border-2 border-blue-100 shadow-sm flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg font-bold">✉️</div>
+                    <div>
+                        <span class="text-xs text-gray-500 font-bold block">Izin</span>
+                        <span id="statIzin" class="heading-font text-xl font-bold text-blue-600">0</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border-2 border-purple-100 shadow-sm flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-lg font-bold">🏛️</div>
+                    <div>
+                        <span class="text-xs text-gray-500 font-bold block">Dinas Luar</span>
+                        <span id="statDinas" class="heading-font text-xl font-bold text-purple-600">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Headmaster Control: Edit Announcement Message -->
+            <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm space-y-3">
+                <h3 class="heading-font font-bold text-gray-800 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-bullhorn text-sdRed-600"></i>
+                    Atur Pesan Motivasi Kepala Sekolah untuk Para Guru
+                </h3>
+                <div class="flex gap-2">
+                    <input type="text" id="inputHeadmasterMessage" placeholder="Tuliskan amanat / motivasi harian Kepala Sekolah..." class="flex-grow p-2.5 border border-gray-300 rounded-xl text-sm outline-none focus:border-sdRed-500">
+                    <button onclick="playSfx('click'); updateHeadmasterMessage()" class="bg-sdRed-600 hover:bg-sdRed-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow">Simpan Pesan</button>
+                </div>
+            </div>
+
+            <!-- Recapitulation Data Table -->
+            <div class="bg-white rounded-2xl border border-gray-200 custom-card-shadow overflow-hidden">
+                <div class="p-4 bg-gray-50 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3">
+                    <h3 class="heading-font font-bold text-gray-800 text-base">Daftar Kehadiran Barcode Guru</h3>
+                    
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-bold text-gray-500">Filter Hari:</span>
+                        <select id="filterDaySelect" onchange="playSfx('click'); renderAttendanceTableGuru()" class="p-1.5 bg-white border border-gray-300 rounded-lg text-xs font-bold text-gray-700 outline-none">
+                            <option value="Semua">Semua Hari (Senin-Sabtu)</option>
+                            <option value="Senin">Senin</option>
+                            <option value="Selasa">Selasa</option>
+                            <option value="Rabu">Rabu</option>
+                            <option value="Kamis">Kamis</option>
+                            <option value="Jumat">Jumat</option>
+                            <option value="Sabtu">Sabtu</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs md:text-sm">
+                        <thead class="bg-slate-100 text-slate-700 uppercase text-[11px] font-bold tracking-wider">
+                            <tr>
+                                <th class="p-3.5">Hari</th>
+                                <th class="p-3.5">Nama Guru</th>
+                                <th class="p-3.5">NIP / Barcode ID</th>
+                                <th class="p-3.5">Status</th>
+                                <th class="p-3.5">Detail Alasan / Keterangan</th>
+                                <th class="p-3.5 text-center">Waktu Presensi</th>
+                                <th class="p-3.5 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBodyGuru" class="divide-y divide-gray-100 font-medium text-gray-700">
+                            <!-- JS Populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 py-4 mt-8">
+        <div class="max-w-6xl mx-auto px-4 text-center text-xs text-gray-500 flex flex-wrap items-center justify-between gap-2">
+            <p>© 2026 Absensi Digital Guru Barcode - UPTD SDN 2 NABANG BARU 🇮🇩</p>
+            <p class="font-semibold text-sdRed-600 flex items-center gap-1">
+                <i class="fa-solid fa-heart"></i> Tut Wuri Handayani
+            </p>
+        </div>
+    </footer>
+
+    <!-- MODAL POPUP (FEEDBACK & MOTIVASI SAKIT / HADIR) -->
+    <div id="feedbackModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border-4 border-yellow-400 relative transform transition-all">
+            <button onclick="playSfx('click'); closeModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold">
+                ✕
+            </button>
+
+            <div id="modalBody" class="space-y-4">
+                <!-- Dynamic Content via JS -->
+            </div>
+
+            <div class="pt-4">
+                <button onclick="playSfx('click'); closeModal()" class="btn-bounce w-full bg-sdRed-600 hover:bg-sdRed-700 text-white font-bold py-3 rounded-xl shadow">
+                    Mengerti & Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // WEB AUDIO API SYNTHESIZER (MUSIC & SFX)
+        let audioCtx = null;
+        let isMusicPlaying = false;
+        let musicInterval = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Cheerful Background Music Melody suitable for School context
+        const bgmNotes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
+        const bgmSequence = [
+            { note: 0, dur: 0.25 }, { note: 2, dur: 0.25 }, { note: 4, dur: 0.25 }, { note: 7, dur: 0.4 },
+            { note: 4, dur: 0.25 }, { note: 7, dur: 0.4 }, { note: 5, dur: 0.25 }, { note: 4, dur: 0.25 },
+            { note: 2, dur: 0.25 }, { note: 4, dur: 0.4 }, { note: 2, dur: 0.25 }, { note: 0, dur: 0.5 }
+        ];
+        let seqIndex = 0;
+
+        function toggleMusic() {
+            initAudio();
+            const btn = document.getElementById('musicToggleBtn');
+            const icon = document.getElementById('musicIcon');
+            const text = document.getElementById('musicText');
+
+            if (isMusicPlaying) {
+                isMusicPlaying = false;
+                clearInterval(musicInterval);
+                btn.className = "px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-1.5 border border-white/30";
+                icon.className = "fa-solid fa-volume-xmark";
+                text.innerText = "Musik: OFF";
+            } else {
+                isMusicPlaying = true;
+                btn.className = "px-3 py-1.5 bg-yellow-400 text-sdRed-900 rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-1.5 border border-yellow-200 animate-pulse";
+                icon.className = "fa-solid fa-music text-sdRed-700";
+                text.innerText = "Musik: ON 🎵";
+                
+                playBgmStep();
+                musicInterval = setInterval(playBgmStep, 380);
+            }
+        }
+
+        function playBgmStep() {
+            if (!isMusicPlaying || !audioCtx) return;
+            try {
+                const item = bgmSequence[seqIndex];
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(bgmNotes[item.note], audioCtx.currentTime);
+                
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + item.dur);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + item.dur);
+                
+                seqIndex = (seqIndex + 1) % bgmSequence.length;
+            } catch(e) {}
+        }
+
+        // Sound Effects Engine
+        function playSfx(type) {
+            initAudio();
+            if (!audioCtx) return;
+            try {
+                if (type === 'click') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(850, audioCtx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.08);
+                } else if (type === 'success') {
+                    const now = audioCtx.currentTime;
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.type = 'triangle';
+                        o.frequency.value = freq;
+                        g.gain.setValueAtTime(0.12, now + i * 0.09);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.09 + 0.28);
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.start(now + i * 0.09);
+                        o.stop(now + i * 0.09 + 0.28);
+                    });
+                } else if (type === 'sad') {
+                    const now = audioCtx.currentTime;
+                    [440, 392, 349].forEach((freq, i) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.type = 'sine';
+                        o.frequency.value = freq;
+                        g.gain.setValueAtTime(0.1, now + i * 0.14);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.14 + 0.35);
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.start(now + i * 0.14);
+                        o.stop(now + i * 0.14 + 0.35);
+                    });
+                }
+            } catch(e) {}
+        }
+    </script>
+
+    <script>
+        // State Storage for Teacher Attendance
+        let teacherAttendanceRecords = JSON.parse(localStorage.getItem('sd_absensi_guru_records')) || [];
+        let savedTeacherNames = JSON.parse(localStorage.getItem('sd_saved_teacher_names')) || [
+            "WINARSO SUGIANTO, S.Pd.Gr",
+            "SUHARTI, S.Pd",
+            "BAMBANG HERMAWAN, S.Pd",
+            "NUR HIDAYAH, S.Pd",
+            "EKO PRASETYO, S.Pd.SD",
+            "SRI WAHYUNI, S.Pd",
+            "AGUS SETIAWAN, S.Pd.Jas"
+        ];
+        let headmasterMessage = localStorage.getItem('sd_headmaster_msg_nabang') || "Selamat bertugas Bapak dan Ibu Guru pendidik bangsa! Mari berikan teladan terbaik, bimbing anak-anak dengan penuh kasih sayang, dan jaga selalu kesehatan.";
+        let currentFormDay = "Senin";
+
+        const daysArray = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+
+        window.onload = function() {
+            initSavedTeacherNamesDatalist();
+            initDateAndDay();
+            renderAttendanceTableGuru();
+            updateStatsGuru();
+            renderBarcode("199208152023011001");
+            
+            document.getElementById('headmasterMessageText').innerText = `"${headmasterMessage}"`;
+            document.getElementById('inputHeadmasterMessage').value = headmasterMessage;
+
+            // Auto audio unlock listener
+            document.body.addEventListener('click', function audioUnlock() {
+                initAudio();
+                document.body.removeEventListener('click', audioUnlock);
+            }, { once: true });
+        };
+
+        // Populate Datalist for custom teacher names autocomplete
+        function initSavedTeacherNamesDatalist() {
+            const datalist = document.getElementById('savedTeacherNamesList');
+            datalist.innerHTML = '';
+            savedTeacherNames.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                datalist.appendChild(option);
+            });
+        }
+
+        function saveTeacherNameToList(name) {
+            if (name && !savedTeacherNames.includes(name)) {
+                savedTeacherNames.push(name);
+                localStorage.setItem('sd_saved_teacher_names', JSON.stringify(savedTeacherNames));
+                initSavedTeacherNamesDatalist();
+            }
+        }
+
+        // Initialize Date & Active Day
+        function initDateAndDay() {
+            const now = new Date();
+            const dayName = daysArray[now.getDay()];
+            const dateStr = now.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            document.getElementById('currentDateBadge').innerHTML = `<i class="fa-regular fa-calendar-check text-yellow-300"></i> ${dayName}, ${dateStr}`;
+
+            if (dayName !== "Minggu") {
+                selectFormDay(dayName);
+            } else {
+                selectFormDay("Senin");
+            }
+        }
+
+        // Render Barcode using JsBarcode
+        function renderBarcode(code) {
+            try {
+                if (!code || code === "MANUAL") code = "UPTD-SDN2-NABANG";
+                JsBarcode("#barcodePreviewCanvas", code, {
+                    format: "CODE128",
+                    lineColor: "#1e293b",
+                    width: 1.8,
+                    height: 38,
+                    displayValue: false
+                });
+                document.getElementById('barcodeCodeText').innerText = `BARCODE ID / NIP: ${code}`;
+            } catch (e) {
+                console.log("Barcode render error:", e);
+            }
+        }
+
+        // Barcode Select Dropdown Handler
+        function onTeacherSelectChange() {
+            const select = document.getElementById('teacherSelect');
+            const val = select.value;
+            if (!val) return;
+
+            if (val === "MANUAL|MANUAL|Manual Custom") {
+                document.getElementById('teacherNameInput').value = "";
+                document.getElementById('teacherNipInput').value = "";
+                renderBarcode("GURU-SDN2-NABANG");
+                return;
+            }
+
+            const parts = val.split('|');
+            const name = parts[0];
+            const nip = parts[1];
+
+            document.getElementById('teacherNameInput').value = name;
+            document.getElementById('teacherNipInput').value = nip;
+
+            renderBarcode(nip);
+            playSfx('click');
+        }
+
+        function renderBarcodeFromInput() {
+            const nip = document.getElementById('teacherNipInput').value.trim();
+            renderBarcode(nip || "GURU-SDN2-NABANG");
+        }
+
+        // Simulate Barcode Scanning
+        function simulateBarcodeScan() {
+            const select = document.getElementById('teacherSelect');
+            const options = select.options;
+            // Pick a random valid teacher option (skip 0 and MANUAL)
+            const randomIndex = Math.floor(Math.random() * (options.length - 2)) + 1;
+            select.selectedIndex = randomIndex;
+            onTeacherSelectChange();
+
+            playSfx('success');
+            confetti({
+                particleCount: 50,
+                spread: 50,
+                origin: { y: 0.7 }
+            });
+
+            alertModal("⚡ Barcode Pendidik Berhasil Dipindai! Data Bapak/Ibu Guru Otomatis Terisi.");
+        }
+
+        // Switch Tab View (Presensi Guru vs Kepala Sekolah)
+        function switchTab(tab) {
+            playSfx('click');
+            const btnGuru = document.getElementById('btnModeGuru');
+            const btnKepsek = document.getElementById('btnModeKepsek');
+            const secGuru = document.getElementById('sectionGuruPresensi');
+            const secKepsek = document.getElementById('sectionKepsekDashboard');
+
+            if (tab === 'guru') {
+                secGuru.classList.remove('hidden');
+                secKepsek.classList.add('hidden');
+                btnGuru.className = "px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold transition-all bg-white text-sdRed-700 shadow-md flex items-center gap-1.5";
+                btnKepsek.className = "px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold transition-all text-white hover:bg-sdRed-600 flex items-center gap-1.5";
+            } else {
+                secGuru.classList.add('hidden');
+                secKepsek.classList.remove('hidden');
+                btnKepsek.className = "px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold transition-all bg-white text-sdRed-700 shadow-md flex items-center gap-1.5";
+                btnGuru.className = "px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold transition-all text-white hover:bg-sdRed-600 flex items-center gap-1.5";
+            }
+        }
+
+        // Select Day Pills
+        function selectFormDay(day) {
+            currentFormDay = day;
+            document.getElementById('selectedDayInput').value = day;
+
+            const buttons = document.querySelectorAll('#dayPillsContainer .day-btn');
+            buttons.forEach(btn => {
+                if (btn.getAttribute('data-day') === day) {
+                    btn.className = "day-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-sdRed-600 text-white shadow-sm";
+                } else {
+                    btn.className = "day-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-600 hover:text-sdRed-600 hover:bg-gray-200";
+                }
+            });
+        }
+
+        function toggleAbsenceFields(isAbsent) {
+            const reasonSec = document.getElementById('absenceReasonSection');
+            if (isAbsent) {
+                reasonSec.classList.remove('hidden');
+            } else {
+                reasonSec.classList.add('hidden');
+            }
+        }
+
+        // Handle Form Submission
+        function handleAttendanceSubmitGuru(event) {
+            event.preventDefault();
+
+            const teacherName = document.getElementById('teacherNameInput').value.trim();
+            const teacherNip = document.getElementById('teacherNipInput').value.trim() || "-";
+            const day = document.getElementById('selectedDayInput').value;
+            const statusRadio = document.querySelector('input[name="attendanceStatus"]:checked');
+
+            if (!teacherName) {
+                alertModal("⚠️ Mohon Ketik atau Pindai Barcode Nama Guru Terlebih Dahulu!");
+                return;
+            }
+
+            if (!statusRadio) {
+                alertModal("⚠️ Mohon Pilih Status Kehadiran Guru (Hadir atau Tidak Hadir)!");
+                return;
+            }
+
+            saveTeacherNameToList(teacherName);
+
+            const status = statusRadio.value;
+            let category = "-";
+            let note = "-";
+
+            if (status === "Tidak Hadir") {
+                const catRadio = document.querySelector('input[name="absenceCategory"]:checked');
+                category = catRadio ? catRadio.value : "Izin";
+                note = document.getElementById('absenceNote').value.trim() || "Tidak ada keterangan tambahan";
+            }
+
+            const timeNow = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            const newRecord = {
+                id: Date.now(),
+                teacherName,
+                teacherNip,
+                day,
+                status,
+                category,
+                note,
+                time: timeNow,
+                timestamp: new Date().toISOString()
+            };
+
+            teacherAttendanceRecords.unshift(newRecord);
+            localStorage.setItem('sd_absensi_guru_records', JSON.stringify(teacherAttendanceRecords));
+
+            if (status === "Hadir") {
+                playSfx('success');
+                confetti({
+                    particleCount: 110,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            } else {
+                playSfx('sad');
+            }
+
+            showFeedbackModal(newRecord);
+
+            document.getElementById('attendanceFormGuru').reset();
+            document.getElementById('teacherSelect').selectedIndex = 0;
+            toggleAbsenceFields(false);
+            
+            renderAttendanceTableGuru();
+            updateStatsGuru();
+        }
+
+        // Show Feedback Modal (Hadir vs Sakit Motivasi)
+        function showFeedbackModal(record) {
+            const modalBody = document.getElementById('modalBody');
+
+            if (record.status === "Hadir") {
+                modalBody.innerHTML = `
+                    <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-4xl mx-auto shadow-inner animate-bounce">
+                        🌟
+                    </div>
+                    <h3 class="heading-font text-2xl font-bold text-emerald-700">Terima Kasih, Bapak/Ibu ${record.teacherName}!</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        Presensi Barcode Anda pada hari <span class="font-bold text-sdRed-600">${record.day}</span> telah sukses dicatat oleh sistem <strong>UPTD SDN 2 NABANG BARU</strong>.
+                    </p>
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-xs text-emerald-800 space-y-1">
+                        <p class="font-bold">📢 Apresiasi Kepala Sekolah:</p>
+                        <p>"Terima kasih atas dedikasi dan semangat Bapak/Ibu Pendidik. Selamat mengajar dengan riang gembira!"</p>
+                    </div>
+                `;
+            } else {
+                if (record.category === "Sakit") {
+                    modalBody.innerHTML = `
+                        <div class="w-20 h-20 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-4xl mx-auto shadow-inner animate-pulse">
+                            🤒
+                        </div>
+                        <h3 class="heading-font text-2xl font-bold text-amber-800">Lekas Sembuh Bapak/Ibu ${record.teacherName}! 💐</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            Laporan bahwa Bapak/Ibu sedang sakit pada hari <span class="font-bold text-sdRed-600">${record.day}</span> telah diterima oleh Kepala Sekolah & Admin.
+                        </p>
+                        
+                        <div class="bg-gradient-to-br from-red-50 to-amber-50 border-2 border-amber-200 rounded-2xl p-4 text-left text-xs space-y-2 text-gray-700">
+                            <div class="flex items-center space-x-2 text-sdRed-700 font-bold">
+                                <i class="fa-solid fa-heart-pulse text-sm"></i>
+                                <span>Motivasi & Saran Kesehatan Kepala Sekolah:</span>
+                            </div>
+                            <ul class="list-disc list-inside space-y-1 text-gray-600">
+                                <li>Istirahatlah dengan cukup dan fokus pada pemulihan kesehatan Bapak/Ibu Guru.</li>
+                                <li>Minum obat teratur dan perbanyak konsumsi air putih hangat serta vitamin.</li>
+                                <li>Segala tugas mengajar sementara akan dikondisikan oleh sekolah. Semoga lekas pulih! ❤️</li>
+                            </ul>
+                        </div>
+                    `;
+                } else if (record.category === "Dinas Luar") {
+                    modalBody.innerHTML = `
+                        <div class="w-20 h-20 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-4xl mx-auto shadow-inner">
+                            🏛️
+                        </div>
+                        <h3 class="heading-font text-2xl font-bold text-purple-800">Dinas Luar Dicatat!</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            Tugas Dinas Luar Bapak/Ibu <span class="font-bold">${record.teacherName}</span> pada hari <span class="font-bold text-sdRed-600">${record.day}</span> tersimpan.
+                        </p>
+                        <div class="bg-purple-50 border border-purple-200 rounded-2xl p-4 text-xs text-purple-800">
+                            <p class="font-bold">📘 Catatan Sekolah:</p>
+                            <p>Selamat menjalankan tugas kedinasan di luar sekolah. Semoga lancar dan sukses selalu!</p>
+                        </div>
+                    `;
+                } else {
+                    modalBody.innerHTML = `
+                        <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-4xl mx-auto shadow-inner">
+                            ✉️
+                        </div>
+                        <h3 class="heading-font text-2xl font-bold text-blue-800">Izin Pendidik Dicatat!</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            Permohonan izin Bapak/Ibu <span class="font-bold">${record.teacherName}</span> pada hari <span class="font-bold text-sdRed-600">${record.day}</span> telah tersimpan di sistem.
+                        </p>
+                        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-xs text-blue-800">
+                            <p class="font-bold">📘 Catatan Sekolah:</p>
+                            <p>Terima kasih telah memberikan konfirmasi kehadiran tepat waktu.</p>
+                        </div>
+                    `;
+                }
+            }
+
+            document.getElementById('feedbackModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('feedbackModal').classList.add('hidden');
+        }
+
+        // Render Table in Headmaster Dashboard
+        function renderAttendanceTableGuru() {
+            const tbody = document.getElementById('attendanceTableBodyGuru');
+            const filterDay = document.getElementById('filterDaySelect').value;
+
+            tbody.innerHTML = '';
+
+            let filtered = teacherAttendanceRecords;
+            if (filterDay !== "Semua") {
+                filtered = teacherAttendanceRecords.filter(r => r.day === filterDay);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-8 text-gray-400 font-normal">
+                            <i class="fa-solid fa-qrcode text-3xl mb-2 block"></i>
+                            Belum ada data presensi barcode guru yang tercatat.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors";
+
+                let statusBadge = '';
+                if (item.status === 'Hadir') {
+                    statusBadge = `<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-bold text-[11px] flex items-center gap-1 w-max"><i class="fa-solid fa-check"></i> Hadir</span>`;
+                } else if (item.category === 'Sakit') {
+                    statusBadge = `<span class="bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full font-bold text-[11px] flex items-center gap-1 w-max"><i class="fa-solid fa-temperature-three-quarters"></i> Sakit</span>`;
+                } else if (item.category === 'Dinas Luar') {
+                    statusBadge = `<span class="bg-purple-100 text-purple-700 px-2.5 py-1 rounded-full font-bold text-[11px] flex items-center gap-1 w-max"><i class="fa-solid fa-building-flag"></i> Dinas Luar</span>`;
+                } else if (item.category === 'Izin') {
+                    statusBadge = `<span class="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full font-bold text-[11px] flex items-center gap-1 w-max"><i class="fa-solid fa-envelope"></i> Izin</span>`;
+                } else {
+                    statusBadge = `<span class="bg-red-100 text-sdRed-700 px-2.5 py-1 rounded-full font-bold text-[11px] flex items-center gap-1 w-max"><i class="fa-solid fa-circle-question"></i> Lainnya</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="p-3.5 font-bold text-sdRed-700">${item.day}</td>
+                    <td class="p-3.5 font-bold text-slate-800">${item.teacherName}</td>
+                    <td class="p-3.5 font-mono text-xs text-slate-500">${item.teacherNip || '-'}</td>
+                    <td class="p-3.5">${statusBadge}</td>
+                    <td class="p-3.5 text-gray-600 max-w-xs truncate">${item.note || '-'}</td>
+                    <td class="p-3.5 text-center text-gray-400 text-xs">${item.time || '-'}</td>
+                    <td class="p-3.5 text-center">
+                        <button onclick="playSfx('click'); deleteRecordGuru(${item.id})" class="text-red-400 hover:text-red-600 p-1 rounded transition-colors" title="Hapus Record">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateStatsGuru() {
+            const totalHadir = teacherAttendanceRecords.filter(r => r.status === 'Hadir').length;
+            const totalSakit = teacherAttendanceRecords.filter(r => r.category === 'Sakit').length;
+            const totalIzin = teacherAttendanceRecords.filter(r => r.category === 'Izin').length;
+            const totalDinas = teacherAttendanceRecords.filter(r => r.category === 'Dinas Luar').length;
+
+            document.getElementById('statHadir').innerText = totalHadir;
+            document.getElementById('statSakit').innerText = totalSakit;
+            document.getElementById('statIzin').innerText = totalIzin;
+            document.getElementById('statDinas').innerText = totalDinas;
+        }
+
+        function updateHeadmasterMessage() {
+            const newMsg = document.getElementById('inputHeadmasterMessage').value.trim();
+            if (newMsg) {
+                headmasterMessage = newMsg;
+                localStorage.setItem('sd_headmaster_msg_nabang', headmasterMessage);
+                document.getElementById('headmasterMessageText').innerText = `"${headmasterMessage}"`;
+                alertModal("✅ Pesan Motivasi Kepala Sekolah Berhasil Diperbarui!");
+            }
+        }
+
+        function deleteRecordGuru(id) {
+            teacherAttendanceRecords = teacherAttendanceRecords.filter(r => r.id !== id);
+            localStorage.setItem('sd_absensi_guru_records', JSON.stringify(teacherAttendanceRecords));
+            renderAttendanceTableGuru();
+            updateStatsGuru();
+        }
+
+        function resetData() {
+            if (teacherAttendanceRecords.length === 0) return;
+            teacherAttendanceRecords = [];
+            localStorage.removeItem('sd_absensi_guru_records');
+            renderAttendanceTableGuru();
+            updateStatsGuru();
+            alertModal("🧹 Seluruh data absensi guru telah di-reset.");
+        }
+
+        function exportToCSV() {''''
+            if (teacherAttendanceRecords.length === 0) {
+                alertModal("⚠️ Belum ada data presensi guru untuk diunduh!");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,Hari,Nama Guru,NIP / Barcode ID,Status,Kategori,Keterangan,Waktu\n";
+            teacherAttendanceRecords.forEach(r => {
+                csvContent += `"${r.day}","${r.teacherName}","${r.teacherNip}","${r.status}","${r.category}","${r.note.replace(/"/g, '""')}","${r.time}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Rekap_Absensi_Guru_Barcode_SDN2_Nabang_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function alertModal(msg) {
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="w-16 h-16 bg-red-100 text-sdRed-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-2">
+                    🔔
+                </div>
+                <h3 class="heading-font text-lg font-bold text-gray-800">${msg}</h3>
+            `;
+            document.getElementById('feedbackModal').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>'''
